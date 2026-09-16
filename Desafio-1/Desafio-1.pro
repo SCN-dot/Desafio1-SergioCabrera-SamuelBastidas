@@ -5,7 +5,9 @@ CONFIG -= qt
 
 SOURCES += \
         bits.cpp \
-        main.cpp
+        main.cpp \
+        tablero.cpp
 
 HEADERS += \
-    bits.h
+    bits.h \
+    tablero.h
