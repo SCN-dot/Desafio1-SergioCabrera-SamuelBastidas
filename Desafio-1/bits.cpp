@@ -62,18 +62,24 @@ void escribirFicha (unsigned char* tablero, int fila, int columna, int numColumn
     }
     else if (desplazamiento == 6) {
 
-        unsigned char bitsBajos = valor & 0x03;         // bits 0-1 de la ficha
-        unsigned char bitAlto   = (valor >> 2) & 0x01;  // bit 2 de la ficha
+        unsigned char bitsBajos = valor & 0x03;
+        unsigned char bitAlto   = (valor >> 2) & 0x01;
 
-        tablero[byteIndex]     = (tablero[byteIndex] & 0x3F) | (bitsBajos << 6);
-        tablero[byteIndex + 1] = (tablero[byteIndex + 1] & 0xFE) | bitAlto;
+        unsigned char mascaraActual   = static_cast<unsigned char>(~(0x03 << 6));
+        unsigned char mascaraSiguiente = static_cast<unsigned char>(~0x01);
+
+        tablero[byteIndex]     = (tablero[byteIndex] & mascaraActual) | (bitsBajos << 6);
+        tablero[byteIndex + 1] = (tablero[byteIndex + 1] & mascaraSiguiente) | bitAlto;
     }
     else {
 
         unsigned char bitBajo   = valor & 0x01;
         unsigned char bitsAltos = (valor >> 1) & 0x03;
 
-        tablero[byteIndex]     = (tablero[byteIndex] & 0x7F) | (bitBajo << 7);
-        tablero[byteIndex + 1] = (tablero[byteIndex + 1] & 0xFC) | bitsAltos;
+        unsigned char mascaraActual   = static_cast<unsigned char>(~(0x01 << 7));
+        unsigned char mascaraSiguiente = static_cast<unsigned char>(~0x03);
+
+        tablero[byteIndex]     = (tablero[byteIndex] & mascaraActual) | (bitBajo << 7);
+        tablero[byteIndex + 1] = (tablero[byteIndex + 1] & mascaraSiguiente) | bitsAltos;
     }
 }
