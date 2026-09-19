@@ -1,85 +1,83 @@
 #include "bits.h"
 
-int calcularBytesNecesarios(int filas, int columnas){
+int calcularTamanoBytes(int filas, int columnas) {
 
-    int totalBits = filas * columnas * BITS_POR_FICHA;
+    int totalBits = filas * columnas * BITS_POR_CELDA;
 
     int bytesNecesarios = (totalBits + 7) / 8;
 
     return bytesNecesarios;
 }
 
-int calcularBitInicial(int fila, int columna, int numColumnas){
+int calcularOffsetBit(int fila, int col, int totalColumnas) {
 
-    int indiceLogico = fila * numColumnas + columna;
+    int indiceL = fila * totalColumnas + col;
 
-    return indiceLogico * BITS_POR_FICHA;
+    return indiceL * BITS_POR_CELDA;
 }
 
-unsigned char obtenerFicha(const unsigned char* tablero, int fila, int columna, int numColumnas){
+unsigned char leerCelda(const unsigned char* tab, int fila, int col, int totalColumnas) {
 
-    int bitInicial = calcularBitInicial(fila,columna,numColumnas);
-    int byteIndex = bitInicial / 8;
-    int desplazamiento = bitInicial % 8;
+    int bitInicial = calcularOffsetBit(fila,col,totalColumnas);
+    int Index = bitInicial >> 3;
+    int desplazamiento = bitInicial & 7;
 
-    unsigned char valor = 0;
+    unsigned char dato = 0;
 
     if (desplazamiento <= 5){
 
-        valor = (tablero[byteIndex] >> desplazamiento) & MASCARA_FICHA;
-    }
-    else if (desplazamiento == 6) {
+        dato = (tab[Index] >> desplazamiento) & MASCARA_CELDA;
+    } else if (desplazamiento == 6) {
 
-        unsigned char bitsBajos = (tablero[byteIndex] >> 6) & 0x03;
-        unsigned char bitAlto = tablero[byteIndex + 1] & 0x01;
+        unsigned char bitsBajos = (tab[Index] >> 6) & 0x03;
+        unsigned char bitAlto = tab[Index + 1] & 0x01;
 
-        valor = bitsBajos | (bitAlto << 2);
-    }
-    else {
+        dato = bitsBajos | (bitAlto << 2);
+    } else {
 
-        unsigned char bitBajo = (tablero[byteIndex] >> 7) & 0x01;
-        unsigned char bitsAltos = tablero[byteIndex + 1] & 0x03;
+        unsigned char bitBajo = (tab[Index] >> 7) & 0x01;
+        unsigned char bitsAltos = tab[Index + 1] & 0x03;
 
-        valor = bitBajo | (bitsAltos << 1);
+        dato = bitBajo | (bitsAltos << 1);
     }// desplazamiento == 7
 
-    return valor;
+    return dato;
 }
 
-void escribirFicha (unsigned char* tablero, int fila, int columna, int numColumnas, unsigned char valor){
+void guardarCelda (unsigned char* tab, int fila, int col, int totalColumnas, unsigned char dato) {
 
-    int bitInicial = calcularBitInicial(fila,columna,numColumnas);
-    int byteIndex = bitInicial / 8;
-    int desplazamiento = bitInicial % 8;
+    int bitInicial = calcularOffsetBit(fila,col,totalColumnas);
+    int Index = bitInicial >> 3;
+    int desplazamiento = bitInicial & 7;
 
-    valor &= MASCARA_FICHA;
+    dato &= MASCARA_CELDA;
 
     if (desplazamiento <= 5) {
 
-        unsigned char mascaraLimpiar = static_cast<unsigned char>(~(MASCARA_FICHA << desplazamiento));
+        unsigned char mascaraLimpiar = static_cast<unsigned char>(~(MASCARA_CELDA << desplazamiento));
 
-        tablero[byteIndex] = (tablero[byteIndex] & mascaraLimpiar) | (valor << desplazamiento);
+        tab[Index] = (tab[Index] & mascaraLimpiar) | (dato << desplazamiento);
     }
     else if (desplazamiento == 6) {
 
-        unsigned char bitsBajos = valor & 0x03;
-        unsigned char bitAlto   = (valor >> 2) & 0x01;
+        unsigned char bitsBajos = dato & 0x03;
+        unsigned char bitAlto   = (dato >> 2) & 0x01;
 
         unsigned char mascaraActual   = static_cast<unsigned char>(~(0x03 << 6));
         unsigned char mascaraSiguiente = static_cast<unsigned char>(~0x01);
 
-        tablero[byteIndex]     = (tablero[byteIndex] & mascaraActual) | (bitsBajos << 6);
-        tablero[byteIndex + 1] = (tablero[byteIndex + 1] & mascaraSiguiente) | bitAlto;
+        tab[Index]     = (tab[Index] & mascaraActual) | (bitsBajos << 6);
+        tab[Index + 1] = (tab[Index + 1] & mascaraSiguiente) | bitAlto;
     }
     else {
 
-        unsigned char bitBajo   = valor & 0x01;
-        unsigned char bitsAltos = (valor >> 1) & 0x03;
+        unsigned char bitBajo   = dato & 0x01;
+        unsigned char bitsAltos = (dato >> 1) & 0x03;
 
         unsigned char mascaraActual   = static_cast<unsigned char>(~(0x01 << 7));
         unsigned char mascaraSiguiente = static_cast<unsigned char>(~0x03);
 
-        tablero[byteIndex]     = (tablero[byteIndex] & mascaraActual) | (bitBajo << 7);
-        tablero[byteIndex + 1] = (tablero[byteIndex + 1] & mascaraSiguiente) | bitsAltos;
+        tab[Index]     = (tab[Index] & mascaraActual) | (bitBajo << 7);
+        tab[Index + 1] = (tab[Index + 1] & mascaraSiguiente) | bitsAltos;
     }
 }

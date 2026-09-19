@@ -3,24 +3,24 @@
 
 #include "bits.h"
 
-const int DIMENSION_MINIMA = 1;
+const int TAM_MINIMO = 1;
 
-const int DIMENSION_MAXIMA = 1000;
+const int TAM_MAXIMO = 1000;
 
-unsigned char generarFichaAleatoria();
+unsigned char generarCeldaRandom();
 
-bool posicionValida(int fila, int columna, int filas, int columnas);
+bool esPosicionValida(int fila, int col, int filas, int columnas);
 
-bool crearTablero(unsigned char*& tablero, int& filas, int& columnas, int& capacidadBytes, int filasIniciales, int columnasIniciales);
+bool inicializarTablero(unsigned char*& tab, int& filas, int& columnas, int& capacidadBytes, int filasIniciales, int columnasIniciales);
 
-void liberarTablero(unsigned char*& tablero, int& filas, int& columnas, int& capacidadBytes);
+void destruirTablero(unsigned char*& tab, int& filas, int& columnas, int& capacidadBytes);
 
-bool insertarFila(unsigned char*& tablero, int& filas, int columnas, int& capacidadBytes, int posicion);
+bool agregarFila(unsigned char*& tab, int& filas, int columnas, int& capacidadBytes, int posicion);
 
-bool eliminarFila(unsigned char*& tablero, int& filas, int columnas, int& capacidadBytes, int posicion);
+bool quitarFila(unsigned char*& tab, int& filas, int columnas, int& capacidadBytes, int posicion);
 
-bool insertarColumna(unsigned char*& tablero, int filas, int& columnas, int& capacidadBytes, int posicion);
+bool agregarColumna(unsigned char*& tab, int filas, int& columnas, int& capacidadBytes, int posicion);
 
-bool eliminarColumna(unsigned char*& tablero, int filas, int& columnas, int& capacidadBytes, int posicion);
+bool quitarColumna(unsigned char*& tab, int filas, int& columnas, int& capacidadBytes, int posicion);
 
 #endif // TABLERO_H

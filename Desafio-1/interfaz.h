@@ -1,14 +1,14 @@
 #ifndef INTERFAZ_H
 #define INTERFAZ_H
 
-char obtenerSimboloFicha(unsigned char codigo);
+char simboloDeCelda(unsigned char codigo);
 
-void mostrarTableroFichas(const unsigned char* tablero, int filas, int columnas);
+void imprimirTabSimbolos(const unsigned char* tab, int filas, int columnas);
 
-void mostrarTableroBinario(const unsigned char* tablero, int filas, int columnas);
+void imprimirTabBinario(const unsigned char* tab, int filas, int columnas);
 
-void mostrarTablero(const unsigned char* tablero, int filas, int columnas);
+void imprimirTablero(const unsigned char* tab, int filas, int columnas);
 
-void mostrarEstadisticas(int filas, int columnas, int eliminacionesUsuario, int fichasEliminadasTotal, int combinacionesDetectadas, int cascadasJugadaActual, int puntuacion);
+void imprimirEstadisticas(int filas, int columnas, int jugadasUsuario, int totalCeldasEliminadas, int totalRachasDetectadas, int cascadasEnJugada, int totalCascadas, int puntosT);
 
 #endif // INTERFAZ_H

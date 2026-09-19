@@ -4,115 +4,133 @@
 
 using namespace std;
 
-static int contarDigitos(int valor)
-{
+static int contarCifras(int valor) {
     bool negativo = (valor < 0);
-    int magnitud = negativo ? -valor : valor;
-
-    int digitos = 1;
-    while (magnitud >= 10)
-    {
-        magnitud /= 10;
-        digitos++;
+    int magnitud;
+    if (negativo) {
+        magnitud = -valor;
+    } else {
+        magnitud = valor;
     }
-    if (negativo)
-        digitos++;
 
-    return digitos;
+    int cifras = 1;
+    while (magnitud >= 10) {
+        magnitud /= 10;
+        cifras++;
+    }
+    if (negativo) {
+        cifras++;
+    }
+
+    return cifras;
 }
 
-static void imprimirEnteroConAncho(int valor, int ancho)
-{
-    int relleno = ancho - contarDigitos(valor);
+static void imprimirNumeroAlineado(int valor, int ancho) {
+    int relleno = ancho - contarCifras(valor);
     for (int i = 0; i < relleno; i++)
         cout << ' ';
     cout << valor;
 }
 
-static void imprimirCaracterConAncho(char c, int ancho)
-{
+static void imprimirCaracterAlineado(char c, int ancho) {
     int relleno = ancho - 1;
-    for (int i = 0; i < relleno; i++)
+    for (int i = 0; i < relleno; i++) {
         cout << ' ';
+    }
     cout << c;
 }
 
-char obtenerSimboloFicha(unsigned char codigo)
-{
-    if (codigo <= 5)
-        return static_cast<char>('A' + codigo);
-    if (codigo == CODIGO_VACIO)
+char simboloDeCelda(unsigned char codigo) {
+    switch (codigo) {
+    case 0: return 'X';
+    case 1: return 'O';
+    case 2: return '#';
+    case 3: return '@';
+    case 4: return '&';
+    case 5: return '$';
+    }
+
+    if (codigo == CELDA_VACIA) {
         return '.';
-    if (codigo == CODIGO_MARCA)
+    }
+    if (codigo == CELDA_MARCADA) {
         return '?';
+    }
 
     return '!';
 }
 
-void mostrarTableroFichas(const unsigned char* tablero, int filas, int columnas)
-{
+void imprimirTabSimbolos(const unsigned char* tab, int filas, int columnas) {
     cout << "\n    Tablero (formato fichas)    \n";
 
+    int mayorIndice = (filas > columnas) ? (filas - 1) : (columnas - 1);
+    int ancho = contarCifras(mayorIndice) + 1;
+    if (ancho < 3) {
+        ancho = 3;
+    }
+
     cout << "     ";
-    for (int c = 0; c < columnas; c++)
-        imprimirEnteroConAncho(c, 3);
+    for (int ci = 0; ci < columnas; ci++) {
+        imprimirNumeroAlineado(ci, ancho);
+    }
     cout << "\n";
 
-    for (int f = 0; f < filas; f++)
-    {
-        imprimirEnteroConAncho(f, 3);
+    for (int fi = 0; fi < filas; fi++) {
+        imprimirNumeroAlineado(fi, ancho);
         cout << "  ";
-        for (int c = 0; c < columnas; c++)
-        {
-            unsigned char codigo = obtenerFicha(tablero, f, c, columnas);
-            imprimirCaracterConAncho(obtenerSimboloFicha(codigo), 3);
+        for (int ci = 0; ci < columnas; ci++) {
+            unsigned char codigo = leerCelda(tab, fi, ci, columnas);
+            imprimirCaracterAlineado(simboloDeCelda(codigo), ancho);
         }
         cout << "\n";
     }
     cout << "\n";
 }
 
-void mostrarTableroBinario(const unsigned char* tablero, int filas, int columnas)
-{
-    int bytesNecesarios = calcularBytesNecesarios(filas, columnas);
+void imprimirTabBinario(const unsigned char* tab, int filas, int columnas) {
+    int bytesNecesarios = calcularTamanoBytes(filas, columnas);
 
     cout << "    Tablero (formato binario,    " << bytesNecesarios << " bytes)    \n";
 
     const int BYTES_POR_LINEA = 8;
-    for (int i = 0; i < bytesNecesarios; i++)
-    {
+    for (int i = 0; i < bytesNecesarios; i++) {
         // Se imprime cada byte del bit mas significativo (7) al menos
-        // significativo (0), que es el orden convencional de lectura.
-        for (int bit = 7; bit >= 0; bit--)
-        {
+        // significativo (0)
+        for (int bit = 7; bit >= 0; bit--) {
             unsigned char mascara = static_cast<unsigned char>(1u << bit);
-            cout << ((tablero[i] & mascara) ? '1' : '0');
+            char bitImpreso;
+            if ((tab[i] & mascara)) {
+                bitImpreso = '1';
+            } else {
+                bitImpreso = '0';
+            }
+            cout << bitImpreso;
         }
         cout << ' ';
 
-        if ((i + 1) % BYTES_POR_LINEA == 0)
+        if ((i + 1) % BYTES_POR_LINEA == 0) {
             cout << "\n";
+        }
     }
-    if (bytesNecesarios % BYTES_POR_LINEA != 0)
+    if (bytesNecesarios % BYTES_POR_LINEA != 0) {
         cout << "\n";
+    }
     cout << "\n";
 }
 
-void mostrarTablero(const unsigned char* tablero, int filas, int columnas)
-{
-    mostrarTableroFichas(tablero, filas, columnas);
-    mostrarTableroBinario(tablero, filas, columnas);
+void imprimirTablero(const unsigned char* tab, int filas, int columnas) {
+    imprimirTabSimbolos(tab, filas, columnas);
+    imprimirTabBinario(tab, filas, columnas);
 }
 
-void mostrarEstadisticas(int filas, int columnas, int eliminacionesUsuario,
-                         int fichasEliminadasTotal, int combinacionesDetectadas,
-                         int cascadasJugadaActual, int puntuacion)
+void imprimirEstadisticas(int filas, int columnas, int jugadasUsuario, int totalCeldasEliminadas, int totalRachasDetectadas, int cascadasEnJugada, int totalCascadas, int puntosT)
 {
     cout << "    ESTADISTICAS    \n";
     cout << "Dimensiones actuales:        " << filas << " x " << columnas << "\n";
-    cout << "Eliminaciones del usuario:   " << eliminacionesUsuario << "\n";
-    cout << "Fichas eliminadas (total):   " << fichasEliminadasTotal << "\n";
-    cout << "Combinaciones detectadas:    " << combinacionesDetectadas << "\n";
-    cout << "Cascadas (jugada actual):    " << cascadasJugadaActual << "\n";
-    cout << "Puntuacion:                  " << puntuacion << "\n\n";
+    cout << "Eliminaciones del usuario:   " << jugadasUsuario << "\n";
+    cout << "Fichas eliminadas (total):   " << totalCeldasEliminadas << "\n";
+    cout << "Combinaciones detectadas:    " << totalRachasDetectadas << "\n";
+    cout << "Cascadas (jugada actual):    " << cascadasEnJugada<< "\n";
+    cout << "Cascadas (total):            " << totalCascadas << "\n";
+    cout << "Puntuacion:                  " << puntosT << "\n\n";
 }
