@@ -63,24 +63,28 @@ char simboloDeCelda(unsigned char codigo) {
 void imprimirTabSimbolos(const unsigned char* tab, int filas, int columnas) {
     cout << "\n    Tablero (formato fichas)    \n";
 
-    int mayorIndice = (filas > columnas) ? (filas - 1) : (columnas - 1);
-    int ancho = contarCifras(mayorIndice) + 1;
-    if (ancho < 3) {
-        ancho = 3;
+    int anchoFila = contarCifras(filas - 1);       // solo depende de las filas
+
+    int anchoCol = contarCifras(columnas - 1) + 1; // solo depende de las columnas
+    if (anchoCol < 3) {
+        anchoCol = 3;
     }
 
-    cout << "     ";
+    // CAMBIO 2: prefijo del encabezado = prefijo de las filas (anchoFila + 2)
+    for (int i = 0; i < anchoFila + 2; i++) {
+        cout << ' ';
+    }
     for (int ci = 0; ci < columnas; ci++) {
-        imprimirNumeroAlineado(ci, ancho);
+        imprimirNumeroAlineado(ci, anchoCol);      // CAMBIO 3
     }
     cout << "\n";
 
     for (int fi = 0; fi < filas; fi++) {
-        imprimirNumeroAlineado(fi, ancho);
+        imprimirNumeroAlineado(fi, anchoFila);     // CAMBIO 3
         cout << "  ";
         for (int ci = 0; ci < columnas; ci++) {
             unsigned char codigo = leerCelda(tab, fi, ci, columnas);
-            imprimirCaracterAlineado(simboloDeCelda(codigo), ancho);
+            imprimirCaracterAlineado(simboloDeCelda(codigo), anchoCol);  // CAMBIO 3
         }
         cout << "\n";
     }
