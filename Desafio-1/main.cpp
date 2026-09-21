@@ -14,7 +14,7 @@ static int pedirEntero(const char* mensaje) {
     while (!(cin >> valor)) {
         cin.clear();
         cin.ignore(1000000, '\n');
-        cout << "Entrada invalida. Ingrese un numero entero: ";
+        cout << "Entrada invalida, Porfavor ingrese un numero entero: ";
     }
     // Se descarta cualquier basura restante en la misma linea
     // (por ejemplo, si el usuario escribio "3 abc").
@@ -29,13 +29,13 @@ static int pedirEnteroRango(const char* mensaje, int minimo, int maximo) {
         if (valor >= minimo && valor <= maximo) {
             break;
         }
-        cout << "Valor fuera de rango [" << minimo << ", " << maximo << "].\n";
+        cout << "Valor fuera de rango [" << minimo << ", " << maximo << "]\n";
     }
     return valor;
 }
 
 static void imprimirMenu() {
-    cout << "\n             SWEET CRUSH             \n";
+    cout << "\n           MENU SWEET CRUSH           \n";
     cout << "1. Eliminar ficha\n";
     cout << "2. Insertar fila\n";
     cout << "3. Eliminar fila\n";
@@ -57,7 +57,7 @@ int main() {
     int numCols = 0;
     int capacidadBuffer = 0;
 
-    /* Variables de estado: las 6 exigidas por el enunciado mas el total de cascadas de la partida */
+    // Variables de estado: las 6 exigidas por el enunciado mas el total de cascadas de la partida
     int jugadasUsuario = 0;
     int totalCeldasEliminadas = 0;
     int totalRachasDetectadas = 0;
@@ -66,14 +66,14 @@ int main() {
     int puntajeAcumulado = 0;
     // (numFilas y numCols, ya declaradas arriba, son las otras 2)
 
-    cout << "Bienvenido a Sweet Crush\n\n";
+    cout << "Inicio de Sweet Crush\n\n";
 
     int filasInicio = pedirEnteroRango("Ingrese filas iniciales (1-1000): ", TAM_MINIMO, TAM_MAXIMO);
 
     int columnasInicio = pedirEnteroRango("Ingrese columnas iniciales (1-1000): ", TAM_MINIMO, TAM_MAXIMO);
 
     if (!inicializarTablero(matrizJuego, numFilas, numCols, capacidadBuffer, filasInicio, columnasInicio)) {
-        cout << "No se pudo crear el tablero. Fin del programa.\n";
+        cout << "No se pudo crear el tablero. Fin del programa\n";
         return 1;
     }
 
@@ -92,8 +92,8 @@ int main() {
 
         switch (seleccion) {
         case 1: {  // Eliminar ficha (jugada del usuario)
-            int renglon = pedirEnteroRango("Fila (0-based): ", 0, numFilas - 1);
-            int col = pedirEnteroRango("Columna (0-based): ", 0, numCols - 1);
+            int renglon = pedirEnteroRango("Fila : ", 0, numFilas - 1);
+            int col = pedirEnteroRango("Columna : ", 0, numCols - 1);
 
             bool resultado = quitarCeldaJugador(matrizJuego, numFilas, numCols, renglon, col, jugadasUsuario, totalCeldasEliminadas);
             if (!resultado) {
@@ -110,7 +110,7 @@ int main() {
         }
 
         case 2: {  // Insertar fila
-            int indice = pedirEnteroRango("Posicion para insertar fila (0-based, 0..filas): ", 0, numFilas);
+            int indice = pedirEnteroRango("Posicion para insertar fila (fila , columna) : ", 0, numFilas);
             if (!agregarFila(matrizJuego, numFilas, numCols, capacidadBuffer, indice)) {
                 cout << "No se pudo insertar la fila (limite de dimension alcanzado).\n";
                 break;
@@ -125,7 +125,7 @@ int main() {
         }
 
         case 3: {  // Eliminar fila
-            int indice = pedirEnteroRango("Posicion de fila a eliminar (0-based): ", 0, numFilas - 1);
+            int indice = pedirEnteroRango("Posicion de fila a eliminar : ", 0, numFilas - 1);
             if (!quitarFila(matrizJuego, numFilas, numCols, capacidadBuffer, indice)) {
                 cout << "No se pudo eliminar la fila (dimension minima alcanzada).\n";
                 break;
@@ -141,7 +141,7 @@ int main() {
         }
 
         case 4: { // Insertar columna
-            int indice = pedirEnteroRango("Posicion para insertar columna (0-based, 0..columnas): ", 0, numCols);
+            int indice = pedirEnteroRango("Posicion para insertar columna (fila , columna): ", 0, numCols);
             if (!agregarColumna(matrizJuego, numFilas, numCols, capacidadBuffer, indice)) {
                 cout << "No se pudo insertar la columna (limite de dimension alcanzado).\n";
                 break;
@@ -155,7 +155,7 @@ int main() {
         }
 
         case 5: { // Eliminar columna
-            int indice = pedirEnteroRango("Posicion de columna a eliminar (0-based): ", 0, numCols - 1);
+            int indice = pedirEnteroRango("Posicion de columna a eliminar : ", 0, numCols - 1);
             if (!quitarColumna(matrizJuego, numFilas, numCols, capacidadBuffer, indice)) {
                 cout << "No se pudo eliminar la columna (dimension minima alcanzada).\n";
                 break;
@@ -184,6 +184,6 @@ int main() {
 
     destruirTablero(matrizJuego, numFilas, numCols, capacidadBuffer);
 
-    cout << "\nGracias por jugar Sweet Crush. Hasta pronto.\n";
+    cout << "\nFin del programa. Gracias por jugar\n";
     return 0;
 }
